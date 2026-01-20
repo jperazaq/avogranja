@@ -174,16 +174,39 @@ async function initGame(user) {
                 leaderboardModal.classList.add('sidebar-mode');
             }
 
-            // Auto-open leaderboard if requested (acts as persistent HUD)
-            if (leaderboardBtn) leaderboardBtn.click();
+            // Auto-open leaderboard ONLY on desktop (screen width > 768px)
+            const isMobile = window.innerWidth <= 768;
+            if (leaderboardBtn && !isMobile) {
+                leaderboardBtn.click();
+            }
 
             game.start();
         });
 
         restartBtn.addEventListener('click', () => {
             gameOverScreen.classList.add('hidden');
+
+            // Close leaderboard on mobile when restarting
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile && leaderboardModal && !leaderboardModal.classList.contains('hidden')) {
+                closeLeaderboardBtn.click();
+            }
+
             game.start();
         });
+
+        // Auto-show leaderboard on mobile when game over screen appears
+        const gameOverObserver = new MutationObserver(() => {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile && !gameOverScreen.classList.contains('hidden') && leaderboardBtn) {
+                // Remove sidebar mode for full modal display on game over
+                if (leaderboardModal) {
+                    leaderboardModal.classList.remove('sidebar-mode');
+                }
+                leaderboardBtn.click();
+            }
+        });
+        gameOverObserver.observe(gameOverScreen, { attributes: true, attributeFilter: ['class'] });
 
         pauseBtn.addEventListener('click', () => game.togglePause());
         resumeBtn.addEventListener('click', () => game.togglePause());
