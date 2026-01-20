@@ -665,6 +665,8 @@
         .leaderboard-content {
             max-width: 90%;
             padding: 15px;
+            background: rgba(46, 125, 50, 0.35) !important;
+            /* More transparent on mobile */
         }
 
         .leaderboard-content h2 {
@@ -698,6 +700,8 @@
             width: 200px;
             margin-top: 60px;
             padding: 8px;
+            background: rgba(46, 125, 50, 0.35) !important;
+            /* More transparent on mobile */
         }
 
         #leaderboard-modal.sidebar-mode .leaderboard-content h2 {
