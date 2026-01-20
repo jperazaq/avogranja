@@ -1,0 +1,603 @@
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap');
+
+    :root {
+        --primary-color: #2E7D32;
+        --accent-color: #FDD835;
+        --text-color: #FFFFFF;
+    }
+
+    body,
+    html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+        font-family: 'Nunito', sans-serif;
+        touch-action: none;
+        /* Prevent browser zooming/scrolling */
+    }
+
+    #game-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-image: url('assets/bg_farm.png');
+        background-size: cover;
+        background-position: center bottom;
+        /* Anchor to bottom */
+    }
+
+    canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        /* Keep aspect ratio logic in JS, or fill */
+    }
+
+    #ui-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        /* Let clicks pass through to canvas */
+    }
+
+    /* SCORE PANEL */
+    #score-panel {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border: 3px solid var(--primary-color);
+        pointer-events: auto;
+        /* Enable clicks for buttons inside UI layer */
+    }
+
+    #hud-logo {
+        height: 65px;
+        /* Increased from 40px */
+    }
+
+    .score-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary-color);
+        padding: 5px 15px;
+        border-radius: 15px;
+        color: white;
+    }
+
+    .score-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    #score-display {
+        font-family: 'Fredoka One', cursive;
+        font-size: 28px;
+        line-height: 1;
+    }
+
+    /* SCREENS */
+    #game-over-screen,
+    #start-screen,
+    #pause-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        pointer-events: auto;
+        /* Re-enable clicks */
+        backdrop-filter: blur(5px);
+        z-index: 100;
+    }
+
+    #pause-btn {
+        background: #FDD835;
+        /* Yellow */
+        border: none;
+        border-radius: 10px;
+        /* Less rounded */
+        width: 60px;
+        /* Larger */
+        height: 60px;
+        /* Larger */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        /* Larger icon */
+        cursor: pointer;
+        box-shadow: 0 4px 0 #F9A825;
+        padding: 0;
+        margin-left: 10px;
+    }
+
+    #pause-btn:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #F9A825;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    h1 {
+        font-family: 'Fredoka One', cursive;
+        font-size: 64px;
+        color: var(--accent-color);
+        text-shadow: 3px 3px 0px #000;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 24px;
+        margin-bottom: 40px;
+    }
+
+    button {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 24px;
+        font-family: 'Fredoka One', cursive;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 0 #1B5E20;
+        transition: transform 0.1s;
+    }
+
+    button:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #1B5E20;
+    }
+
+    .big-logo {
+        width: 300px;
+        margin-bottom: 20px;
+    }
+
+    /* LOGIN SCREEN */
+    #login-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-image: url('assets/bg_farm.png');
+        background-size: cover;
+        background-position: center bottom;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+    }
+
+    .login-box {
+        background: #8D6E63;
+        /* Wooden brown base */
+        background-image: linear-gradient(to right, #8D6E63, #795548);
+        border: 8px solid #5D4037;
+        padding: 20px;
+        /* Reduced from 30px */
+        border-radius: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        /* Slightly Reduced gap */
+        width: 90%;
+        max-width: 320px;
+        /* Reduced from 360px */
+        box-shadow: 0 10px 0 #3E2723, 0 20px 40px rgba(0, 0, 0, 0.5);
+        position: relative;
+        box-sizing: border-box;
+        /* Ensure padding is included in width */
+    }
+
+    /* Nails effect for wooden board */
+    .login-box::before,
+    .login-box::after {
+        content: '';
+        position: absolute;
+        top: 15px;
+        width: 12px;
+        height: 12px;
+        background: #3E2723;
+        border-radius: 50%;
+        box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.2);
+    }
+
+    .login-box::before {
+        left: 15px;
+    }
+
+    .login-box::after {
+        right: 15px;
+    }
+
+    .big-logo {
+        width: 260px;
+        /* Increased 30% */
+        margin-bottom: 5px;
+    }
+
+    .login-box h1 {
+        font-size: 36px;
+        /* Reduced from 48px */
+        margin: 5px 0;
+        color: #FFECB3;
+        text-shadow: 2px 2px 0 #3E2723;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 3px solid #5D4037;
+        background: #FFF8E1;
+        font-size: 16px;
+        font-family: 'Nunito', sans-serif;
+        outline: none;
+        box-sizing: border-box;
+        color: #5D4037;
+        font-weight: bold;
+    }
+
+    input:focus {
+        border-color: var(--accent-color);
+        background: #FFFFFF;
+    }
+
+    .auth-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .auth-buttons button {
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 12px;
+        /* Smaller padding */
+        font-size: 20px;
+    }
+
+    #login-btn,
+    #auth-action-btn {
+        /* Ensure ID matches JS */
+        background: #43A047;
+        box-shadow: 0 4px 0 #1B5E20;
+    }
+
+    #auth-action-btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 0 0 #1B5E20;
+    }
+
+    #toggle-auth-btn {
+        background: transparent;
+        box-shadow: none;
+        color: #FFECB3;
+        padding: 8px;
+        font-size: 14px;
+        text-decoration: underline;
+        text-shadow: 1px 1px 0 #3E2723;
+        margin-top: 0;
+        border: none;
+    }
+
+    #toggle-auth-btn:active {
+        transform: none;
+        box-shadow: none;
+        color: #FFFFFF;
+    }
+
+    .error-msg {
+        color: #FFCDD2;
+        background: rgba(183, 28, 28, 0.4);
+        border-radius: 8px;
+        padding: 8px;
+        width: 100%;
+        font-size: 14px;
+        min-height: 20px;
+        font-weight: bold;
+        text-align: center;
+        box-sizing: border-box;
+        text-shadow: 1px 1px 0 #000;
+    }
+
+    /* Logout Button */
+    #logout-btn {
+        background: #E53935;
+        box-shadow: 0 4px 0 #B71C1C;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        z-index: 1000;
+        pointer-events: auto;
+        /* Enable clicks */
+        cursor: pointer;
+    }
+
+    #logout-btn:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #B71C1C;
+    }
+
+
+    /* LEADERBOARD */
+    /* LEADERBOARD - Default: Centered Modal (Menu Mode) */
+    #leaderboard-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+
+        /* Game Background */
+        background-color: #000;
+        background-image: url('assets/bg_farm.png');
+        background-size: cover;
+        background-position: center bottom;
+
+        display: flex;
+        justify-content: center;
+        /* Center by default */
+        align-items: center;
+        z-index: 300;
+        pointer-events: auto;
+        /* Block clicks on background in menu */
+    }
+
+    .leaderboard-content {
+        background: rgba(46, 125, 50, 0.6);
+        /* Forest Green 60% opacity */
+        backdrop-filter: blur(5px);
+        /* Optional readability boost */
+        border: 4px solid #1B5E20;
+        border-radius: 15px;
+
+        width: 90%;
+        max-width: 450px;
+        height: auto;
+        max-height: 80vh;
+        margin: 0;
+
+        padding: 20px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+        /* Custom Scrollbar */
+        scrollbar-width: thin;
+        scrollbar-color: #A5D6A7 #1B5E20;
+    }
+
+    .leaderboard-content::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .leaderboard-content::-webkit-scrollbar-track {
+        background: #1B5E20;
+        border-radius: 4px;
+    }
+
+    .leaderboard-content::-webkit-scrollbar-thumb {
+        background: #A5D6A7;
+        /* Light Green */
+        border-radius: 4px;
+    }
+
+    /* LEADERBOARD - Sidebar Mode (In-Game) */
+    #leaderboard-modal.sidebar-mode {
+        justify-content: flex-start;
+        background: transparent;
+        pointer-events: none;
+        align-items: flex-start;
+    }
+
+    #leaderboard-modal.sidebar-mode .leaderboard-content {
+        pointer-events: auto;
+        background: rgba(46, 125, 50, 0.6);
+        /* Match transparency */
+        border-left: none;
+        border-radius: 0 25px 25px 0;
+
+        width: 250px;
+        margin-top: 100px;
+        padding: 10px;
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Close Button positioned top-right */
+    /* Close Button positioned top-right */
+    .close-btn {
+        position: absolute;
+        top: 2px !important;
+        right: 5px !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        width: auto !important;
+
+        color: #FDD835;
+        font-size: 21px !important;
+        /* Increased by 50% from 14px */
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 20;
+        text-shadow: 1px 1px 0 #000;
+        opacity: 0.8;
+        line-height: normal;
+        border-radius: 0 !important;
+    }
+
+    .close-btn:hover {
+        opacity: 1;
+        transform: scale(1.1);
+        color: #FFF;
+    }
+
+    /* HEADER ART: Stars + Ribbon */
+    .leaderboard-header-art {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .stars-deco {
+        display: flex;
+        gap: 15px;
+        margin-bottom: -15px;
+        /* Overlap with ribbon slightly */
+        z-index: 2;
+    }
+
+    .deco-avo {
+        filter: drop-shadow(0 2px 0 #000);
+    }
+
+    .star-main {
+        width: 40px;
+        height: auto;
+    }
+
+    .star-side {
+        width: 30px;
+        height: auto;
+        margin-top: 10px;
+    }
+
+    .ribbon {
+        background: #D32F2F;
+        /* Red Ribbon Color */
+        padding: 5px 30px;
+        position: relative;
+        text-align: center;
+        border: 3px solid #FFF;
+        box-shadow: 0 5px 0 #8B0000;
+        /* 3D depth */
+        transform: skew(-5deg) rotate(-2deg);
+        /* Jaunty angle */
+        z-index: 1;
+        width: 100%;
+        /* Fit container */
+        max-width: 300px;
+    }
+
+    /* Little triangles for ribbon ends effect (optional simplified) */
+    .ribbon::before,
+    .ribbon::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        z-index: -1;
+        border: 15px solid #8B0000;
+    }
+
+    .leaderboard-content h2 {
+        font-size: 24px;
+        color: #FFD700;
+        /* Gold Text */
+        margin: 0;
+        font-family: 'Fredoka One', cursive;
+        text-shadow: 2px 2px 0 #000;
+        text-transform: uppercase;
+        transform: skew(5deg);
+        /* Counter-skew text */
+        letter-spacing: 1px;
+    }
+
+    #leaderboard-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .leaderboard-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        background: #FFF;
+        border-radius: 10px;
+        border: 2px solid #5D4037;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    /* Top 3 Highlighting */
+    .rank-1 {
+        background: linear-gradient(to right, #FFD700, #FDB931);
+        border-color: #B8860B;
+        color: #FFF;
+        text-shadow: 1px 1px 0 #8B4513;
+        transform: scale(1.05);
+    }
+
+    .rank-2 {
+        background: linear-gradient(to right, #E0E0E0, #BDBDBD);
+        border-color: #757575;
+        color: #424242;
+    }
+
+    .rank-3 {
+        background: linear-gradient(to right, #CD7F32, #A0522D);
+        border-color: #8B4513;
+        color: #FFF;
+    }
+
+    #close-leaderboard {
+        background: #F44336;
+        box-shadow: 0 4px 0 #D32F2F;
+        margin-top: 10px;
+    }
+
+    /* Utility */
+    .hidden {
+        display: none !important;
+    }
+
+    #leaderboard-modal {
+        z-index: 9999 !important;
+        /* Ensure it is on top */
+    }

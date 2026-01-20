@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AvoGranja</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="login-container">
+        <div class="login-box">
+            <img src="assets/logo_white.png" class="big-logo" alt="Avocash">
+            <h1 id="auth-title">Ingresar</h1>
+            <input type="text" id="nickname-input" placeholder="Apodo (Nickname)" class="hidden">
+            <input type="email" id="email-input" placeholder="Correo electrónico">
+            <input type="password" id="password-input" placeholder="Contraseña">
+            <p id="auth-error" class="error-msg"></p>
+            <div class="auth-buttons">
+                <button id="auth-action-btn">INGRESAR</button>
+                <button id="toggle-auth-btn">¿No tienes cuenta? Regístrate</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <button id="logout-btn" title="Cerrar Sesión">Salir</button>
+            <div id="score-panel">
+                <img src="assets/logo.png" id="hud-logo" alt="Avocash Logo">
+                <div class="score-container">
+                    <img src="assets/avocado.png" class="score-icon" alt="Score">
+                    <span id="score-display">20</span>
+                </div>
+                <div class="score-container" style="background: #F9A825;">
+                    <span style="font-size:16px;">🏆</span>
+                    <span id="hud-high-score">0</span>
+                </div>
+                <button id="pause-btn">⏸</button>
+            </div>
+            <div id="pause-screen" class="hidden">
+                <h1>PAUSA</h1>
+                <button id="resume-btn">Continuar</button>
+            </div>
+            <div id="game-over-screen" class="hidden">
+                <h1>JUEGO TERMINADO</h1>
+                <p>Puntaje Final: <span id="final-score">0</span></p>
+                <p>🏆 Récord: <span id="high-score">0</span></p>
+                <button id="restart-btn">Jugar de Nuevo</button>
+            </div>
+            <div id="start-screen">
+                <img src="assets/logo.png" class="big-logo" alt="Avocash">
+                <h1>AvoGranja</h1>
+                <p>¡Atrapa los aguacates y evita que caigan!</p>
+                <button id="start-btn">Jugar</button>
+                <button id="leaderboard-btn" class="secondary-btn" style="margin-top: 10px;">🏆 Tabla de
+                    Líderes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEADERBOARD MODAL -->
+    <div id="leaderboard-modal" class="hidden">
+        <div class="leaderboard-content">
+            <button id="close-leaderboard" class="close-btn">&times;</button>
+
+            <div class="leaderboard-header-art">
+                <div class="stars-deco">
+                    <img src="assets/avocado.png" class="star-side deco-avo" alt="avo">
+                    <img src="assets/avocado.png" class="star-main deco-avo" alt="avo">
+                    <img src="assets/avocado.png" class="star-side deco-avo" alt="avo">
+                </div>
+                <div class="ribbon">
+                    <h2>TOP 10 GRANJEROS</h2>
+                </div>
+            </div>
+
+            <div id="leaderboard-list">Cargando...</div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+Para solucionar el error de permisos ("Missing or insufficient permissions"), debes configurar las reglas de seguridad en tu consola de Firebase.
+
+1. Ve a la consola de Firebase: https://console.firebase.google.com/
+2. Selecciona tu proyecto "avogranja".
+3. En el menú izquierdo, ve a **Firestore Database** > **Reglas**.
+4. Copia y pega las siguientes reglas y haz clic en **Publicar**:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permitir leer a todos (para tabla de líderes) pero escribir solo al dueño
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
