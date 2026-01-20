@@ -245,6 +245,11 @@
         margin-bottom: 5px;
     }
 
+    .characters-img {
+        width: 200px;
+        margin-bottom: 10px;
+    }
+
     .login-box h1 {
         font-size: 36px;
         /* Reduced from 48px */
@@ -619,6 +624,10 @@
             width: 180px !important;
         }
 
+        .characters-img {
+            width: 150px !important;
+        }
+
         .login-box h1 {
             font-size: 28px;
         }
@@ -756,6 +765,10 @@
 
         .big-logo {
             width: 150px !important;
+        }
+
+        .characters-img {
+            width: 120px !important;
         }
 
         .login-box h1 {
