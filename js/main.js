@@ -29,6 +29,7 @@ const startScreen = document.getElementById('start-screen');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const gameOverScreen = document.getElementById('game-over-screen');
+const gameOverLeaderboardBtn = document.getElementById('gameover-leaderboard-btn');
 
 const pauseBtn = document.getElementById('pause-btn');
 const resumeBtn = document.getElementById('resume-btn');
@@ -152,6 +153,58 @@ if (closeLeaderboardBtn) {
     });
 }
 
+// Game Over Leaderboard Button Handler
+if (gameOverLeaderboardBtn) {
+    gameOverLeaderboardBtn.addEventListener('click', async () => {
+        // Remove sidebar mode for full modal display
+        if (leaderboardModal) {
+            leaderboardModal.classList.remove('sidebar-mode');
+        }
+
+        // Trigger the main leaderboard button to show modal
+        if (leaderboardBtn) {
+            leaderboardBtn.click();
+        }
+    });
+}
+
+// Function to refresh leaderboard data
+async function refreshLeaderboard() {
+    if (!leaderboardList || !leaderboardBtn) return;
+
+    leaderboardList.innerHTML = 'Actualizando...';
+
+    try {
+        const data = await getLeaderboard();
+
+        if (data.length === 0) {
+            leaderboardList.innerHTML = '<p>No hay datos aún.</p>';
+            return;
+        }
+
+        leaderboardList.innerHTML = '';
+        data.forEach((entry, index) => {
+            const rank = index + 1;
+            const row = document.createElement('div');
+            row.className = `leaderboard-entry rank-${rank}`;
+
+            let medal = '';
+            if (rank === 1) medal = '🥇 ';
+            if (rank === 2) medal = '🥈 ';
+            if (rank === 3) medal = '🥉 ';
+
+            row.innerHTML = `
+                <span>${medal}#${rank} ${entry.nickname}</span>
+                <span>${entry.score} pts</span>
+            `;
+            leaderboardList.appendChild(row);
+        });
+    } catch (e) {
+        // console.error("Error refreshing leaderboard:", e);
+        leaderboardList.innerHTML = '<p style="color:red">Error de conexión.</p>';
+    }
+}
+
 // Resize Handler
 window.addEventListener('resize', () => {
     if (game) game.resize();
@@ -204,6 +257,11 @@ async function initGame(user) {
                     leaderboardModal.classList.remove('sidebar-mode');
                 }
                 leaderboardBtn.click();
+            }
+
+            // Refresh leaderboard data whenever game over screen appears
+            if (!gameOverScreen.classList.contains('hidden')) {
+                refreshLeaderboard();
             }
         });
         gameOverObserver.observe(gameOverScreen, { attributes: true, attributeFilter: ['class'] });
