@@ -136,6 +136,10 @@ export class Game {
         this.fetchHighScore();
     }
 
+    restart() {
+        this.start();
+    }
+
     start() {
         this.score = 20;
         this.maxScore = 20; // Reset max score for this session

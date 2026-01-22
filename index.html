@@ -12,7 +12,7 @@
 <body>
     <div id="login-container">
         <div class="login-box">
-            <img src="assets/logo_white.png" class="big-logo" alt="Avocash">
+            <img src="assets/logo.png" class="big-logo" alt="Avocash">
             <h1 id="auth-title">Ingresar</h1>
             <input type="text" id="nickname-input" placeholder="Apodo (Nickname)" class="hidden">
             <input type="email" id="email-input" placeholder="Correo electrónico">
@@ -27,41 +27,81 @@
 
     <div id="game-container" class="hidden">
         <canvas id="gameCanvas"></canvas>
-        <div id="ui-layer">
+        <div id="top-left-controls">
             <button id="logout-btn" title="Cerrar Sesión">Salir</button>
-            <div id="score-panel">
-                <img src="assets/logo.png" id="hud-logo" alt="Avocash Logo">
+            <button id="lobby-btn-hud" class="hidden">🏠 Lobby</button>
+        </div>
+        <div id="puzzle-container" class="hidden">
+            <!-- Old Header Removed to avoid duplication with HUD -->
+            <div id="puzzle-header" class="hidden"></div>
+            <div id="puzzle-grid"></div>
+
+            <!-- Countdown Overlay -->
+            <div id="puzzle-countdown" class="hidden">3</div>
+
+            <!-- Reference Image Modal -->
+            <div id="reference-modal" class="hidden">
+                <img id="reference-img" src="" alt="Referencia">
+                <button id="close-ref-btn">Cerrar</button>
+            </div>
+        </div>
+        <div id="score-panel">
+            <img src="assets/logo.png" id="hud-logo" alt="Avocash Logo">
+
+            <!-- Catch Mode Stats -->
+            <div id="catch-stats" class="stats-group">
                 <div class="score-container">
                     <img src="assets/avocado.png" class="score-icon" alt="Score">
-                    <span id="score-display">20</span>
+                    <span id="score-display">0</span>
                 </div>
                 <div class="score-container" style="background: #F9A825;">
                     <span style="font-size:16px;">🏆</span>
                     <span id="hud-high-score">0</span>
                 </div>
+            </div>
+
+            <!-- Puzzle Mode Stats -->
+            <div id="puzzle-stats" class="stats-group hidden">
+                <div class="score-container" style="background: #E65100;">
+                    <span style="font-size:16px;">Nivel</span>
+                    <span id="hud-puzzle-level">1</span>
+                </div>
+                <div class="score-container" style="background: #0277BD;">
+                    <span style="font-size:16px;">⏱️</span>
+                    <span id="hud-puzzle-timer">00:00</span>
+                </div>
+            </div>
+
+            <div class="hud-controls">
                 <button id="pause-btn">⏸</button>
             </div>
-            <div id="pause-screen" class="hidden">
-                <h1>PAUSA</h1>
-                <button id="resume-btn">Continuar</button>
-            </div>
-            <div id="game-over-screen" class="hidden">
-                <h1>JUEGO TERMINADO</h1>
-                <p>Puntaje Final: <span id="final-score">0</span></p>
-                <p>🏆 Récord: <span id="high-score">0</span></p>
-                <button id="restart-btn">Jugar de Nuevo</button>
-                <button id="gameover-leaderboard-btn" class="secondary-btn" style="margin-top: 10px;">🏆 Ver Tabla de
-                    Líderes</button>
-            </div>
-            <div id="start-screen">
-                <img src="assets/logo_white.png?v=2" class="big-logo" alt="Avocash">
-                <h1>AvoGranja</h1>
-                <p>¡Atrapa los aguacates y evita que caigan!</p>
-                <button id="start-btn">Jugar</button>
-                <button id="leaderboard-btn" class="secondary-btn" style="margin-top: 10px;">🏆 Tabla de
-                    Líderes</button>
+        </div>
+        <div id="pause-screen" class="hidden">
+            <h1>PAUSA</h1>
+            <button id="resume-btn">Continuar</button>
+            <button id="pause-lobby-btn" class="secondary-btn" style="margin-top: 15px;">🏠 Volver al Lobby</button>
+        </div>
+        <div id="game-over-screen" class="hidden">
+            <h1>JUEGO TERMINADO</h1>
+            <p>Puntaje Final: <span id="final-score">0</span></p>
+            <p>🏆 Récord: <span id="high-score">0</span></p>
+            <button id="restart-btn">Jugar de Nuevo</button>
+            <button id="lobby-btn" class="secondary-btn" style="margin-top: 10px;">🏠 Volver al Lobby</button>
+            <button id="gameover-leaderboard-btn" class="secondary-btn" style="margin-top: 10px;">🏆 Ver Tabla de
+                Líderes</button>
+        </div>
+        <div id="start-screen">
+            <img src="assets/logo.png?v=2" class="big-logo" alt="Avocash">
+            <h1>AvoGranja</h1>
+            <p>¡Atrapa los aguacates y evita que caigan!</p>
+            <button id="start-catch-btn">🥑 Atrapar</button>
+            <button id="start-puzzle-btn">🧩 Rompecabezas</button>
+            <div class="menu-buttons-row">
+                <button id="leaderboard-btn" class="secondary-btn">🏆 Tabla General</button>
+                <button id="puzzle-leaderboard-btn" class="secondary-btn">🧩 Récords Puzzle</button>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- LEADERBOARD MODAL -->

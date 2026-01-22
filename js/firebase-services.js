@@ -122,3 +122,73 @@ export const getLeaderboard = async () => {
         return [];
     }
 };
+
+export const savePuzzleStats = async (uid, level, sessionTimeSeconds) => {
+    const docRef = doc(db, "users", uid);
+    try {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const currentMaxLevel = data.puzzleMaxLevel || 0;
+            const currentTotalTime = data.puzzleTotalTime || 0;
+
+            const updates = {
+                puzzleTotalTime: currentTotalTime + sessionTimeSeconds,
+                lastUpdated: serverTimestamp()
+            };
+
+            if (level > currentMaxLevel) {
+                updates.puzzleMaxLevel = level;
+            }
+
+            await updateDoc(docRef, updates);
+        }
+    } catch (error) {
+        console.error("Error saving puzzle stats:", error);
+    }
+};
+
+export const getPuzzleLeaderboard = async () => {
+    try {
+        // Order by Max Level first, then maybe something else? 
+        // For now just Max Level.
+        const q = query(collection(db, "users"), orderBy("puzzleMaxLevel", "desc"), limit(10));
+        const querySnapshot = await getDocs(q);
+        const leaderboard = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            leaderboard.push({
+                nickname: data.nickname || "Anónimo",
+                level: data.puzzleMaxLevel || 1,
+                time: data.puzzleTotalTime || 0
+            });
+        });
+        return leaderboard;
+    } catch (error) {
+        // console.error("Error fetching puzzle leaderboard:", error);
+        return [];
+    }
+};
+
+export const syncPuzzleStats = async (uid, localLevel) => {
+    const docRef = doc(db, "users", uid);
+    try {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+
+            // If field missing OR local level is higher than cloud logic
+            const cloudLevel = data.puzzleMaxLevel || 0;
+
+            if (cloudLevel === 0 || localLevel > cloudLevel) {
+                await updateDoc(docRef, {
+                    puzzleMaxLevel: localLevel,
+                    puzzleTotalTime: data.puzzleTotalTime || 0, // Initialize if missing
+                    lastUpdated: serverTimestamp()
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Error syncing puzzle stats:", error);
+    }
+};

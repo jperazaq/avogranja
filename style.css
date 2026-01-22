@@ -168,6 +168,38 @@
         cursor: pointer;
         box-shadow: 0 6px 0 #1B5E20;
         transition: transform 0.1s;
+        width: 100%;
+        max-width: 300px;
+        margin: 10px 0;
+    }
+
+    #start-catch-btn {
+        background: #4CAF50;
+        box-shadow: 0 6px 0 #1B5E20;
+    }
+
+    #start-puzzle-btn {
+        background: #FF9800;
+        /* Orange for puzzle */
+        box-shadow: 0 6px 0 #E65100;
+    }
+
+    .menu-buttons-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .menu-buttons-row button {
+        padding: 10px 15px;
+        font-size: 16px;
+        width: auto;
+        flex: 1;
+        background: #795548;
+        /* Brown for secondary */
+        box-shadow: 0 4px 0 #3E2723;
     }
 
     button:active {
@@ -774,64 +806,768 @@
         .login-box h1 {
             font-size: 24px;
         }
+    }
 
-        #score-panel {
-            top: 5px;
-            right: 5px;
-            padding: 6px 10px;
-            gap: 8px;
-            border-radius: 15px;
+    /* ============================================
+    PUZZLE MODE STYLES
+    ============================================ */
+    #puzzle-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        /* Match main game background */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* Center visually */
+        z-index: 10;
+        /* Below UI layer but above bg */
+        pointer-events: auto !important;
+        /* Force interactive */
+    }
+
+    #puzzle-header {
+        position: relative;
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        background: transparent;
+        /* Remove container bg */
+        padding: 0;
+    }
+
+    #puzzle-header h2 {
+        font-family: 'Fredoka One', cursive;
+        color: white;
+        text-shadow: 2px 2px 0 #000;
+        padding: 8px 16px;
+        border-radius: 50px;
+        border: 3px solid white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        margin: 0;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Level Badge - Orange */
+    #puzzle-header h2:first-child {
+        background: linear-gradient(180deg, #FF9800, #F57C00);
+        border-color: #FFE0B2;
+    }
+
+    /* Timer Badge - Blue/Purple */
+    #puzzle-header h2:last-child {
+        background: linear-gradient(180deg, #2196F3, #1976D2);
+        border-color: #BBDEFB;
+    }
+
+    #puzzle-grid {
+        display: grid;
+        gap: 0;
+        /* Wooden Background for empty slot */
+        background: #3E2723;
+        padding: 0;
+
+        /* Wooden Frame Aesthetic */
+        border: 12px solid #5D4037;
+        border-right-color: #3E2723;
+        border-bottom-color: #3E2723;
+        border-left-color: #8D6E63;
+        border-top-color: #8D6E63;
+        border-radius: 4px;
+        box-shadow:
+            inset 0 0 20px rgba(0, 0, 0, 0.5),
+            /* Inner shadow for depth */
+            0 10px 20px rgba(0, 0, 0, 0.5);
+        /* Drop shadow */
+
+        width: 95vw;
+        max-width: 650px;
+        margin-bottom: 20px;
+        aspect-ratio: auto;
+    }
+
+    #puzzle-countdown {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Fredoka One', cursive;
+        font-size: 120px;
+        color: white;
+        text-shadow: 4px 4px 0 #FF9800, -2px -2px 0 #000;
+        z-index: 50;
+        pointer-events: none;
+        animation: pulseCount 0.8s infinite alternate;
+    }
+
+    @keyframes pulseCount {
+        from {
+            transform: translate(-50%, -50%) scale(1);
         }
 
-        #hud-logo {
-            height: 28px;
-        }
-
-        .score-container {
-            padding: 3px 8px;
-            font-size: 12px;
-        }
-
-        #score-display {
-            font-size: 18px;
-        }
-
-        #pause-btn {
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-        }
-
-        .leaderboard-content h2 {
-            font-size: 18px;
-        }
-
-        .ribbon {
-            max-width: 200px;
-        }
-
-        #leaderboard-modal.sidebar-mode .leaderboard-content {
-            width: 160px;
-            margin-top: 50px;
-        }
-
-        #leaderboard-modal.sidebar-mode .leaderboard-content h2 {
-            font-size: 14px;
-        }
-
-        #leaderboard-modal.sidebar-mode .ribbon {
-            max-width: 140px;
-            padding: 2px 10px;
-        }
-
-        #game-over-screen h1,
-        #start-screen h1,
-        #pause-screen h1 {
-            font-size: 36px;
-        }
-
-        button {
-            font-size: 18px;
-            padding: 10px 24px;
+        to {
+            transform: translate(-50%, -50%) scale(1.2);
         }
     }
+
+    .puzzle-tile {
+        width: 100%;
+        height: 100%;
+        background: #FFF;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+    .puzzle-tile.empty {
+        background: transparent;
+        cursor: default;
+    }
+
+    .puzzle-tile:hover:not(.empty) {
+        transform: scale(0.98);
+    }
+
+    #reference-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 300;
+    }
+
+    #reference-img {
+        max-width: 90%;
+        max-height: 80%;
+        border: 5px solid #FFF;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    #score-panel {
+        top: 5px;
+        right: 5px;
+        padding: 6px 10px;
+        gap: 8px;
+        border-radius: 15px;
+    }
+
+    #hud-logo {
+        height: 28px;
+    }
+
+    .score-container {
+        padding: 3px 8px;
+        font-size: 12px;
+    }
+
+    #score-display {
+        font-size: 18px;
+    }
+
+    #pause-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    #leaderboard-modal.sidebar-mode {
+        background: transparent;
+        justify-content: flex-start;
+        align-items: flex-start;
+        pointer-events: none;
+    }
+
+    #leaderboard-modal.sidebar-mode .leaderboard-content {
+        width: 260px;
+        /* Mas ancha: Increased from ~180px default */
+        height: 60vh;
+        /* Mas pequeña: specific height, not full screen */
+        margin-left: 10px;
+        margin-top: 110px;
+        /* Increased separation from logout button */
+        padding: 5px;
+        /* Minimal padding */
+
+        background: rgba(46, 125, 50, 0.4);
+        /* Less obtrusive opacity */
+        border: 2px solid rgba(27, 94, 32, 0.5);
+        /* Thinner border */
+        border-radius: 10px;
+
+        pointer-events: auto;
+        transform: scale(0.85);
+        /* Mas pequeña: Scale down entire element */
+        transform-origin: top left;
+    }
+
+    /* Compact entries for Sidebar */
+    #leaderboard-modal.sidebar-mode .leaderboard-entry {
+        padding: 4px 8px;
+        /* Compact padding */
+        margin-bottom: 4px;
+        font-size: 13px;
+        /* Smaller font */
+        min-height: auto;
+    }
+
+    #leaderboard-modal.sidebar-mode .ribbon {
+        max-width: 140px;
+        padding: 2px 10px;
+        font-size: 14px;
+        /* Smaller title */
+        margin-bottom: 5px;
+    }
+
+    #leaderboard-modal.sidebar-mode h2 {
+        margin: 5px 0;
+        font-size: 16px;
+    }
+
+    #leaderboard-modal.sidebar-mode .star-main,
+    #leaderboard-modal.sidebar-mode .star-side {
+        width: 20px;
+        /* Smaller icons */
+    }
+
+    #game-over-screen h1,
+    #start-screen h1,
+    #pause-screen h1 {
+        font-size: 36px;
+    }
+
+    button {
+        font-size: 18px;
+        padding: 10px 24px;
+    }
+    }
+/* UPDATED HUD STYLES */
+#score-panel {
+    align-items: flex-end;
+    pointer-events: none;
+}
+#score-panel > * {
+    pointer-events: auto;
+}
+#hud-logo {
+    width: 280px;
+    height: auto;
+    filter: drop-shadow(0 4px 0 #000);
+}
+.stats-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+.score-container {
+    min-width: 140px;
+    justify-content: center;
+}
+.hud-controls {
+    display: flex;
+    gap: 10px;
+}
+#lobby-btn-hud {
+    background: #FFD700;
+    border: 3px solid #FFF;
+    color: #FFF;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #FF8F00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#lobby-btn-hud:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 0 #FF8F00;
+}
+
+
+/* UI FIXES */
+.hud-controls {
+    display: flex;
+    flex-direction: row !important; /* Force horizontal */
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#lobby-btn-hud {
+    background: #FFD700 !important; /* Force Gold */
+    border: 3px solid #FFF;
+    color: #FFF;
+    width: 60px; /* Slightly wider */
+    height: 50px;
+}
+
+#pause-btn {
+    width: 60px;
+    height: 50px;
+    background: #FFD700 !important;
+}
+
+#score-panel {
+    align-items: flex-end !important;
+    gap: 5px; /* Tighter vertical spacing */
+}
+
+
+/* NEW LOGO SIZE & CONTROLS */
+#hud-logo {
+    width: 380px !important; /* Even Bigger Logo */
+    max-width: 90vw;
+}
+
+#top-left-controls {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 200;
+}
+
+#logout-btn {
+    position: static !important; /* Reset absolute positioning */
+    background: #FF5252;
+    color: white;
+    border: 3px solid white;
+    box-shadow: 0 4px 0 #D32F2F;
+    border-radius: 15px;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 10px 20px;
+}
+
+#logout-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 0 #D32F2F;
+}
+
+/* Re-style lobby button for top-left context */
+#lobby-btn-hud {
+    width: auto !important; /* Auto width for text */
+    padding: 10px 20px;
+    font-size: 18px;
+    height: auto !important;
+}
+
+@media (max-width: 768px) {
+    #top-left-controls {
+        top: 10px;
+        left: 10px;
+        flex-direction: column; /* Stack on mobile if needed, or row */
+        gap: 5px;
+    }
+    #logout-btn, #lobby-btn-hud {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+    #hud-logo {
+        width: 180px !important;
+    }
+}
+
+
+/* URGENT UI FIX - Hide logo during gameplay */
+.game-active #hud-logo {
+    display: none !important;
+}
+
+#hud-logo {
+    width: 200px !important; /* Smaller by default */
+}
+
+/* Compact HUD for gameplay */
+#score-panel {
+    gap: 3px !important;
+}
+
+.score-container {
+    padding: 6px 12px !important;
+    font-size: 18px !important;
+    min-width: 100px !important;
+}
+
+/* Semi-transparent HUD during puzzle */
+.puzzle-active #score-panel {
+    opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+    #hud-logo {
+        width: 120px !important;
+    }
+    .score-container {
+        padding: 4px 8px !important;
+        font-size: 14px !important;
+        min-width: 80px !important;
+    }
+}
+
+
+/* LOGO PROPORTIONAL FIX - Show smaller during gameplay */
+.game-active #hud-logo {
+    display: block !important; /* Override previous hide */
+    width: 120px !important; /* Smaller proportional size */
+    max-width: 25vw;
+}
+
+/* Even smaller on mobile during gameplay */
+@media (max-width: 768px) {
+    .game-active #hud-logo {
+        width: 80px !important;
+        max-width: 20vw;
+    }
+}
+
+
+/* HORIZONTAL LAYOUT - Everything in one line */
+.game-active #score-panel {
+    flex-direction: row !important; /* Horizontal instead of vertical */
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.game-active .stats-group {
+    flex-direction: row !important;
+    gap: 8px !important;
+}
+
+/* Smaller spacing for inline layout */
+.game-active #score-panel {
+    gap: 8px !important;
+}
+
+@media (max-width: 768px) {
+    .game-active #score-panel {
+        gap: 5px !important;
+        flex-wrap: wrap; /* Allow wrapping on very small screens */
+    }
+}
+
+
+/* COMPACT HUD - Much narrower */
+.game-active #hud-logo {
+    width: 80px !important; /* Even smaller logo */
+    max-width: 15vw;
+}
+
+.game-active .score-container {
+    padding: 5px 10px !important;
+    font-size: 16px !important;
+    min-width: 90px !important;
+}
+
+.game-active #pause-btn {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 20px !important;
+}
+
+/* Tighter spacing */
+.game-active #score-panel {
+    gap: 6px !important;
+}
+
+.game-active .stats-group {
+    gap: 6px !important;
+}
+
+@media (max-width: 768px) {
+    .game-active #hud-logo {
+        width: 60px !important;
+    }
+    .game-active .score-container {
+        padding: 4px 8px !important;
+        font-size: 14px !important;
+        min-width: 75px !important;
+    }
+    .game-active #pause-btn {
+        width: 35px !important;
+        height: 35px !important;
+    }
+}
+
+
+/* LOGO VISIBILITY FIX - Better contrast and sizing */
+.game-active #hud-logo {
+    width: 100px !important; /* Slightly bigger for readability */
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)) !important; /* Better shadow */
+    background: rgba(255,255,255,0.9); /* White background */
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+/* Ensure logo is crisp */
+#hud-logo {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+
+/* WHITE LOGO WITH DARK BACKGROUND */
+.game-active #hud-logo {
+    background: linear-gradient(135deg, #2E7D32, #1B5E20) !important; /* Green gradient background */
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
+}
+
+
+/* CLEAN LOGO - No background, just the logo */
+.game-active #hud-logo {
+    background: none !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)) !important; /* Subtle shadow only */
+}
+
+
+/* ============================================
+   RESPONSIVE HUD - MOBILE & TABLET
+   ============================================ */
+
+/* Tablets (Portrait) */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .game-active #hud-logo {
+        width: 90px !important;
+    }
+    
+    .game-active .score-container {
+        padding: 6px 12px !important;
+        font-size: 15px !important;
+        min-width: 85px !important;
+    }
+    
+    .game-active #score-panel {
+        gap: 6px !important;
+        top: 15px;
+        right: 15px;
+    }
+}
+
+/* Mobile Landscape & Small Tablets */
+@media (max-width: 768px) and (min-width: 481px) {
+    .game-active #hud-logo {
+        width: 70px !important;
+    }
+    
+    .game-active .score-container {
+        padding: 5px 10px !important;
+        font-size: 14px !important;
+        min-width: 75px !important;
+    }
+    
+    .game-active #pause-btn {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 18px !important;
+    }
+    
+    .game-active #score-panel {
+        gap: 5px !important;
+        top: 10px;
+        right: 10px;
+    }
+    
+    #top-left-controls {
+        top: 10px;
+        left: 10px;
+        gap: 6px;
+    }
+    
+    #top-left-controls button {
+        font-size: 13px !important;
+        padding: 6px 12px !important;
+    }
+}
+
+/* Mobile Portrait */
+@media (max-width: 480px) {
+    .game-active #hud-logo {
+        width: 55px !important;
+        max-width: 12vw;
+    }
+    
+    .game-active .score-container {
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        min-width: 65px !important;
+    }
+    
+    .game-active #pause-btn {
+        width: 35px !important;
+        height: 35px !important;
+        font-size: 16px !important;
+    }
+    
+    .game-active #score-panel {
+        gap: 4px !important;
+        top: 8px;
+        right: 8px;
+        flex-wrap: nowrap; /* Keep single line */
+    }
+    
+    .game-active .stats-group {
+        gap: 4px !important;
+    }
+    
+    #top-left-controls {
+        top: 8px;
+        left: 8px;
+        gap: 4px;
+        flex-direction: row; /* Horizontal on mobile */
+    }
+    
+    #top-left-controls button {
+        font-size: 11px !important;
+        padding: 5px 10px !important;
+        border-radius: 10px;
+    }
+    
+    #lobby-btn-hud {
+        padding: 5px 8px !important;
+    }
+}
+
+/* Extra Small Mobile (< 360px) */
+@media (max-width: 360px) {
+    .game-active #hud-logo {
+        width: 45px !important;
+    }
+    
+    .game-active .score-container {
+        padding: 3px 6px !important;
+        font-size: 11px !important;
+        min-width: 55px !important;
+    }
+    
+    .game-active #pause-btn {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+    }
+    
+    #top-left-controls button {
+        font-size: 10px !important;
+        padding: 4px 8px !important;
+    }
+}
+
+
+/* FIX OVERLAP - Stack HUD vertically on small screens */
+@media (max-width: 768px) {
+    .game-active #score-panel {
+        flex-direction: column !important; /* Vertical stack on mobile */
+        align-items: flex-end !important;
+        gap: 5px !important;
+    }
+    
+    .game-active .stats-group {
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        gap: 5px !important;
+    }
+    
+    /* Move left controls lower to avoid overlap */
+    #top-left-controls {
+        top: auto !important;
+        bottom: 20px !important;
+        left: 10px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #top-left-controls {
+        bottom: 15px !important;
+        left: 8px !important;
+    }
+}
+
+
+/* HORIZONTAL HUD FIX - Override vertical layout */
+@media (max-width: 768px) {
+    .game-active #score-panel {
+        flex-direction: row !important; /* Keep horizontal */
+        align-items: center !important;
+        flex-wrap: wrap !important; /* Allow wrapping if needed */
+        gap: 4px !important;
+        max-width: calc(100vw - 160px); /* Leave space for left controls */
+    }
+    
+    .game-active .stats-group {
+        flex-direction: row !important; /* Horizontal stats */
+        gap: 4px !important;
+    }
+    
+    /* Keep left controls at bottom to avoid overlap */
+    #top-left-controls {
+        top: auto !important;
+        bottom: 10px !important;
+        left: 10px !important;
+        z-index: 150 !important;
+    }
+}
+
+
+/* SINGLE LINE HUD - No wrapping, no stacking */
+.game-active #score-panel {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    max-width: none !important;
+}
+
+.game-active .stats-group {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+}
+
+.game-active .hud-controls {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Compact everything for single line */
+.game-active #hud-logo {
+    width: 70px !important;
+}
+
+.game-active .score-container {
+    padding: 4px 10px !important;
+    font-size: 14px !important;
+    min-width: auto !important;
+    white-space: nowrap;
+}
+
+.game-active #pause-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 18px !important;
+}
+

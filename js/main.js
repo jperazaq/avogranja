@@ -1,4 +1,5 @@
 import { Game } from './game.js';
+import { PuzzleGame } from './puzzle.js';
 import { Assets } from './assets.js';
 import { AudioManager } from './audio.js';
 import {
@@ -6,6 +7,9 @@ import {
     loginUser,
     logoutUser,
     getLeaderboard,
+    getPuzzleLeaderboard,
+    savePuzzleStats,
+    syncPuzzleStats,
     subscribeToAuthChanges
 } from './firebase-services.js';
 
@@ -26,17 +30,82 @@ const leaderboardList = document.getElementById('leaderboard-list');
 const closeLeaderboardBtn = document.getElementById('close-leaderboard');
 
 const startScreen = document.getElementById('start-screen');
-const startBtn = document.getElementById('start-btn');
+// const startBtn = document.getElementById('start-btn'); // Removed
+const startCatchBtn = document.getElementById('start-catch-btn');
+const startPuzzleBtn = document.getElementById('start-puzzle-btn');
 const restartBtn = document.getElementById('restart-btn');
+const lobbyBtn = document.getElementById('lobby-btn');
 const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverLeaderboardBtn = document.getElementById('gameover-leaderboard-btn');
+const puzzleLeaderboardBtn = document.getElementById('puzzle-leaderboard-btn');
 
 const pauseBtn = document.getElementById('pause-btn');
 const resumeBtn = document.getElementById('resume-btn');
+const lobbyBtnHud = document.getElementById('lobby-btn-hud');
+const pauseLobbyBtn = document.getElementById('pause-lobby-btn');
+const uiLayer = document.getElementById('ui-layer'); // Ensure access to toggle HUD mode
+
+// HUD Mode Manager
+function updateHUDMode(mode) {
+    const catchStats = document.getElementById('catch-stats');
+    const puzzleStats = document.getElementById('puzzle-stats');
+
+    if (mode === 'puzzle') {
+        catchStats.classList.add('hidden');
+        puzzleStats.classList.remove('hidden');
+    } else {
+        catchStats.classList.remove('hidden');
+        puzzleStats.classList.add('hidden');
+    }
+}
+
+// Global Pause Toggle
+function togglePause() {
+    if (!startScreen.classList.contains('hidden')) return; // Ignore if in menu
+
+    const isPuzzle = !document.getElementById('puzzle-container').classList.contains('hidden');
+
+    if (isPuzzle && puzzleGame) {
+        puzzleGame.togglePause();
+    } else if (game) {
+        game.togglePause();
+    }
+}
+
+// Return to Lobby Logic
+function returnToLobby() {
+    // Hide screens
+    document.getElementById('pause-screen').classList.add('hidden');
+    document.getElementById('puzzle-container').classList.add('hidden'); // Hide puzzle specifically
+    document.getElementById('game-over-screen').classList.add('hidden');
+
+    // Hide Lobby Button HUD
+    if (lobbyBtnHud) lobbyBtnHud.classList.add('hidden');
+
+    // Remove game-active classes
+    document.body.classList.remove('game-active', 'puzzle-active');
+
+    // Resume audio context if needed
+    if (audio.ctx.state === 'suspended') audio.ctx.resume();
+
+    // Show Start Screen changes
+    startScreen.classList.remove('hidden');
+
+    // Reset Games
+    if (game) game.reset();
+    if (puzzleGame) puzzleGame.exit(); // This should stop timer and clean up
+
+    // Close Leaderboard / Reset Sidebar
+    if (leaderboardModal) {
+        leaderboardModal.classList.add('hidden');
+        leaderboardModal.classList.remove('sidebar-mode');
+    }
+}
 
 // Game State
 const audio = new AudioManager();
 let game;
+let puzzleGame;
 let currentUser = null;
 let isLoginMode = true;
 
@@ -105,11 +174,77 @@ logoutBtn.addEventListener('click', async () => {
     }
 });
 
+// Shared Leaderboard Loader
+async function loadLeaderboard(type = 'main') {
+    if (!leaderboardModal || !leaderboardList) return;
+
+    leaderboardModal.classList.remove('hidden');
+    leaderboardList.innerHTML = 'Cargando...';
+
+    const ribbonTitle = leaderboardModal.querySelector('.ribbon h2');
+
+    try {
+        let data = [];
+        if (type === 'puzzle') {
+            if (ribbonTitle) ribbonTitle.textContent = "MÁSTERS DEL PUZZLE";
+            data = await getPuzzleLeaderboard();
+        } else {
+            if (ribbonTitle) ribbonTitle.textContent = "TOP 10 GRANJEROS";
+            data = await getLeaderboard();
+        }
+
+        if (data.length === 0) {
+            leaderboardList.innerHTML = '<p>No hay datos aún.</p>';
+            return;
+        }
+
+        leaderboardList.innerHTML = '';
+        data.forEach((entry, index) => {
+            const rank = index + 1;
+            const row = document.createElement('div');
+            row.className = `leaderboard-entry rank-${rank}`;
+
+            let medal = '';
+            if (rank === 1) medal = '🥇 ';
+            if (rank === 2) medal = '🥈 ';
+            if (rank === 3) medal = '🥉 ';
+
+            let scoreText = '';
+            if (type === 'puzzle') {
+                // Format time: e.g., 1.5h or 45m
+                let timeStr = "";
+                const hours = Math.floor(entry.time / 3600);
+                const minutes = Math.floor((entry.time % 3600) / 60);
+
+                if (hours > 0) timeStr = `${hours}h ${minutes}m`;
+                else timeStr = `${minutes}m`;
+                scoreText = `Nivel ${entry.level} <small>(${timeStr})</small>`;
+            } else {
+                scoreText = `${entry.score} pts`;
+            }
+
+            row.innerHTML = `
+                <span>${medal}#${rank} ${entry.nickname}</span>
+                <span>${scoreText}</span>
+            `;
+            leaderboardList.appendChild(row);
+        });
+    } catch (e) {
+        console.error("Error loading leaderboard:", e);
+        leaderboardList.innerHTML = '<p style="color:red">Error de conexión.</p>';
+    }
+}
+
 // Leaderboard Logic
 if (leaderboardBtn) {
     leaderboardBtn.addEventListener('click', async () => {
         // console.log("BOARD: Button clicked");
         leaderboardModal.classList.remove('hidden');
+
+        // Reset Title for Main Game
+        const ribbonTitle = leaderboardModal.querySelector('.ribbon h2');
+        if (ribbonTitle) ribbonTitle.textContent = "TOP 10 GRANJEROS";
+
         leaderboardList.innerHTML = 'Cargando...';
 
         try {
@@ -155,54 +290,76 @@ if (closeLeaderboardBtn) {
 
 // Game Over Leaderboard Button Handler
 if (gameOverLeaderboardBtn) {
-    gameOverLeaderboardBtn.addEventListener('click', async () => {
-        // Remove sidebar mode for full modal display
-        if (leaderboardModal) {
-            leaderboardModal.classList.remove('sidebar-mode');
-        }
-
-        // Trigger the main leaderboard button to show modal
-        if (leaderboardBtn) {
-            leaderboardBtn.click();
-        }
+    gameOverLeaderboardBtn.addEventListener('click', () => {
+        leaderboardModal.classList.remove('sidebar-mode');
+        loadLeaderboard('main'); // Shows main score for Catch Game
     });
 }
 
 // Function to refresh leaderboard data
 async function refreshLeaderboard() {
-    if (!leaderboardList || !leaderboardBtn) return;
-
-    leaderboardList.innerHTML = 'Actualizando...';
-
-    try {
-        const data = await getLeaderboard();
-
-        if (data.length === 0) {
-            leaderboardList.innerHTML = '<p>No hay datos aún.</p>';
-            return;
-        }
-
-        leaderboardList.innerHTML = '';
-        data.forEach((entry, index) => {
-            const rank = index + 1;
-            const row = document.createElement('div');
-            row.className = `leaderboard-entry rank-${rank}`;
-
-            let medal = '';
-            if (rank === 1) medal = '🥇 ';
-            if (rank === 2) medal = '🥈 ';
-            if (rank === 3) medal = '🥉 ';
-
-            row.innerHTML = `
-                <span>${medal}#${rank} ${entry.nickname}</span>
-                <span>${entry.score} pts</span>
-            `;
-            leaderboardList.appendChild(row);
-        });
-    } catch (e) {
-        // console.error("Error refreshing leaderboard:", e);
-        leaderboardList.innerHTML = '<p style="color:red">Error de conexión.</p>';
+    // Check which game is active or check title
+    const ribbonTitle = leaderboardModal.querySelector('.ribbon h2');
+    if (ribbonTitle && ribbonTitle.textContent.includes('PUZZLE')) {
+        await loadLeaderboard('puzzle');
+    } else {
+        await loadLeaderboard('main');
     }
+}
+
+
+// Puzzle Leaderboard Logic
+if (puzzleLeaderboardBtn) {
+    puzzleLeaderboardBtn.addEventListener('click', async () => {
+        leaderboardModal.classList.remove('hidden');
+        leaderboardModal.classList.remove('sidebar-mode'); // Always full modal for puzzle
+        leaderboardList.innerHTML = 'Cargando Récords...';
+
+        // Update Title
+        const ribbonTitle = leaderboardModal.querySelector('.ribbon h2');
+        if (ribbonTitle) ribbonTitle.textContent = "MÁSTERS DEL PUZZLE";
+
+        try {
+            const data = await getPuzzleLeaderboard();
+
+            if (data.length === 0) {
+                leaderboardList.innerHTML = '<p>No hay datos aún.</p>';
+                return;
+            }
+
+            leaderboardList.innerHTML = '';
+            data.forEach((entry, index) => {
+                const rank = index + 1;
+                const row = document.createElement('div');
+                row.className = `leaderboard-entry rank-${rank}`;
+
+                let medal = '';
+                if (rank === 1) medal = '🥇 ';
+                if (rank === 2) medal = '🥈 ';
+                if (rank === 3) medal = '🥉 ';
+
+                // Format time: e.g., 1.5h or 45m
+                let timeStr = "";
+                const hours = Math.floor(entry.time / 3600);
+                const minutes = Math.floor((entry.time % 3600) / 60);
+
+                if (hours > 0) timeStr = `${hours}h ${minutes}m`;
+                else timeStr = `${minutes}m`;
+
+                row.innerHTML = `
+                    <span>${medal}#${rank} ${entry.nickname}</span>
+                    <span>Nivel ${entry.level} <small>(${timeStr})</small></span>
+                `;
+                leaderboardList.appendChild(row);
+            });
+        } catch (e) {
+            console.error("Error fetching puzzle leaderboard:", e);
+            leaderboardList.innerHTML = '<p style="color:red">Error de conexión.</p>';
+        }
+    });
+
+    // Reset title when closing? Maybe needed if sharing modal.
+    // Yes, the main leaderboard button should reset it.
 }
 
 // Resize Handler
@@ -216,25 +373,80 @@ async function initGame(user) {
         await Assets.loadAll();
         // Pass user to Game constructor
         game = new Game(audio, user);
+        // Initialize Puzzle Game with Callback
+        puzzleGame = new PuzzleGame(audio, async (level, timeElapsed) => {
+            if (currentUser && currentUser.uid) {
+                // console.log(`Saving Puzzle Stats: Level ${level}, Time ${timeElapsed}s`);
+                await savePuzzleStats(currentUser.uid, level, timeElapsed);
+            }
+        });
+
+        // Sync initial stats (in case they have local progress but no cloud record)
+        if (currentUser && currentUser.uid) {
+            await syncPuzzleStats(currentUser.uid, puzzleGame.level);
+        }
 
         // Setup Game Event Listeners
-        startBtn.addEventListener('click', () => {
-            if (audio.ctx.state === 'suspended') audio.ctx.resume();
-            startScreen.classList.add('hidden');
+        if (startCatchBtn) {
+            startCatchBtn.addEventListener('click', () => {
+                if (audio.ctx.state === 'suspended') audio.ctx.resume();
+                startScreen.classList.add('hidden');
 
-            // Switch to Sidebar Mode for in-game
-            if (leaderboardModal) {
-                leaderboardModal.classList.add('sidebar-mode');
-            }
+                // Set HUD Mode
+                updateHUDMode('catch');
 
-            // Auto-open leaderboard ONLY on desktop (screen width > 768px)
-            const isMobile = window.innerWidth <= 768;
-            if (leaderboardBtn && !isMobile) {
-                leaderboardBtn.click();
-            }
+                // Switch to Sidebar Mode for in-game
+                if (leaderboardModal) {
+                    leaderboardModal.classList.add('sidebar-mode');
+                }
 
-            game.start();
-        });
+                // Auto-open leaderboard ONLY on desktop (screen width > 768px)
+                const isMobile = window.innerWidth <= 768;
+                if (!isMobile) {
+                    loadLeaderboard('main');
+                }
+
+                // Show Lobby Button HUD
+                if (lobbyBtnHud) lobbyBtnHud.classList.remove('hidden');
+
+                // Add game-active class to hide logo
+                document.body.classList.add('game-active');
+
+                game.start();
+            });
+        }
+
+        if (startPuzzleBtn) {
+            startPuzzleBtn.addEventListener('click', () => {
+                // Ensure audio context is resume if needed (even though puzzle might be quiet initially)
+                if (audio.ctx.state === 'suspended') audio.ctx.resume();
+
+                startScreen.classList.add('hidden');
+
+                // Set HUD Mode
+                updateHUDMode('puzzle');
+
+                // Switch to Sidebar Mode for in-game
+                if (leaderboardModal) {
+                    leaderboardModal.classList.add('sidebar-mode');
+                }
+
+                // Auto-open leaderboard ONLY on desktop (screen width > 768px)
+                const isMobile = window.innerWidth <= 768;
+                if (!isMobile) {
+                    loadLeaderboard('puzzle');
+                }
+
+                // Show Lobby Button HUD
+                if (lobbyBtnHud) lobbyBtnHud.classList.remove('hidden');
+
+                // Add game-active and puzzle-active classes
+                document.body.classList.add('game-active', 'puzzle-active');
+
+                // Start Puzzle Mode
+                puzzleGame.start();
+            });
+        }
 
         restartBtn.addEventListener('click', () => {
             gameOverScreen.classList.add('hidden');
@@ -245,8 +457,26 @@ async function initGame(user) {
                 closeLeaderboardBtn.click();
             }
 
-            game.start();
+            game.restart();
         });
+
+        // Lobby Button Logic
+        if (lobbyBtn) {
+            lobbyBtn.addEventListener('click', () => {
+                gameOverScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+
+                // Close leaderboard if open (reset to clean state)
+                if (leaderboardModal && !leaderboardModal.classList.contains('hidden')) {
+                    closeLeaderboardBtn.click();
+                }
+
+                // Ensure sidebar mode is removed so it defaults to modal when opened again in lobby
+                if (leaderboardModal) {
+                    leaderboardModal.classList.remove('sidebar-mode');
+                }
+            });
+        }
 
         // Auto-show leaderboard on mobile when game over screen appears
         const gameOverObserver = new MutationObserver(() => {
@@ -266,8 +496,11 @@ async function initGame(user) {
         });
         gameOverObserver.observe(gameOverScreen, { attributes: true, attributeFilter: ['class'] });
 
-        pauseBtn.addEventListener('click', () => game.togglePause());
-        resumeBtn.addEventListener('click', () => game.togglePause());
+        pauseBtn.addEventListener('click', togglePause);
+        resumeBtn.addEventListener('click', togglePause);
+
+        if (lobbyBtnHud) lobbyBtnHud.addEventListener('click', returnToLobby);
+        if (pauseLobbyBtn) pauseLobbyBtn.addEventListener('click', returnToLobby);
     } else {
         // If game exists, just update user (handling potential re-login with different user)
         game.updateUser(user);

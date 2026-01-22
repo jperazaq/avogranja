@@ -136,4 +136,15 @@ export class AudioManager {
         setTimeout(() => this.playTone(554, 'sine', 0.1), 50); // C#5
         setTimeout(() => this.playTone(659, 'sine', 0.1), 100); // E5
     }
+
+    playTick() {
+        // Woodblock tick sound
+        this.playTone(800, 'square', 0.05, 800);
+    }
+
+    playStart() {
+        // Positive start sound
+        this.playTone(600, 'sine', 0.1, 800);
+        setTimeout(() => this.playTone(1000, 'sine', 0.3, 1200), 100);
+    }
 }
