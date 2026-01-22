@@ -1752,3 +1752,23 @@
     }
 }
 
+
+/* WHITE LOGIN BUTTON */
+#auth-action-btn {
+    background: white !important;
+    color: #2E7D32 !important; /* Dark Green text for contrast */
+    border: 2px solid #E0E0E0 !important;
+    box-shadow: 0 4px 0 #E0E0E0 !important;
+}
+
+#auth-action-btn:hover {
+    background: #F5F5F5 !important;
+    transform: translateY(-2px);
+}
+
+#auth-action-btn:active {
+    background: #EEEEEE !important;
+    transform: scale(0.98);
+    box-shadow: 0 2px 0 #BDBDBD !important;
+}
+

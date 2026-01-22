@@ -50,7 +50,10 @@ export class PuzzleGame {
                 this.countdownDisplay.classList.add('hidden');
 
                 // START GAME
-                if (this.audio) this.audio.playStart();
+                if (this.audio) {
+                    this.audio.playStart();
+                    this.audio.startBackgroundMusic();
+                }
                 this.shuffle();
                 this.render();
                 this.isPlaying = true; // Enable clicks
@@ -223,6 +226,7 @@ export class PuzzleGame {
         this.container.classList.add('hidden');
         this.stopTimer();
         this.isPlaying = false;
+        if (this.audio) this.audio.stopBackgroundMusic();
         document.getElementById('start-screen').classList.remove('hidden');
 
         // Show main HUD again
@@ -314,6 +318,7 @@ export class PuzzleGame {
         this.isPaused = true;
         this.isPlaying = false;
         this.stopTimer();
+        if (this.audio) this.audio.stopBackgroundMusic();
 
         // Show pause screen
         document.getElementById('pause-screen').classList.remove('hidden');
@@ -323,6 +328,7 @@ export class PuzzleGame {
         if (!this.isPaused) return;
         this.isPaused = false;
         this.isPlaying = true;
+        if (this.audio) this.audio.startBackgroundMusic();
 
         // Resume timer with remaining time
         this.startCountdown(this.timeRemaining);
@@ -578,6 +584,7 @@ export class PuzzleGame {
     handleWin() {
         this.stopTimer();
         this.isPlaying = false;
+        if (this.audio) this.audio.stopBackgroundMusic();
         alert(`¡Nivel ${this.level} Completado!`);
 
         this.level++;
@@ -589,6 +596,7 @@ export class PuzzleGame {
 
     handleGameOver() {
         this.isPlaying = false;
+        if (this.audio) this.audio.stopBackgroundMusic();
         alert("¡Tiempo agotado! Intenta de nuevo.");
         this.loadLevel(); // Restart same level
     }
