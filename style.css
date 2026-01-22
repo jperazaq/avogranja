@@ -1706,3 +1706,49 @@
     }
 }
 
+
+/* STRONG FIX FOR MOBILE BUTTON TRUNCATION */
+@media (max-width: 768px) {
+    #logout-btn, #lobby-btn-hud {
+        width: auto !important;
+        min-width: 85px !important; /* Forced wider */
+        padding: 8px 15px !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #logout-btn, #lobby-btn-hud {
+        min-width: 75px !important; /* Wider on small screens too */
+        font-size: 13px !important; /* Slightly bigger text */
+        padding: 6px 14px !important;
+    }
+}
+
+
+/* FINAL FIX FOR MOBILE BUTTON TRUNCATION */
+@media (max-width: 768px) {
+    #logout-btn {
+        width: auto !important;
+        min-width: 100px !important; /* Much wider to be safe */
+        padding: 8px 12px !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        font-size: 16px !important; /* Ensure font isn't too huge */
+    }
+}
+
+@media (max-width: 480px) {
+    #logout-btn {
+        min-width: 90px !important;
+        font-size: 14px !important;
+        padding: 6px 10px !important;
+    }
+}
+
