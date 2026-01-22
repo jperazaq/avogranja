@@ -1615,3 +1615,94 @@
     }
 }
 
+
+/* HIDE LOBBY BUTTON IN LOBBY - Only show during gameplay */
+#start-screen ~ #top-left-controls #lobby-btn-hud,
+#lobby-btn-hud.hidden {
+    display: none !important;
+}
+
+/* Ensure logout button is always visible */
+#logout-btn {
+    display: block !important;
+}
+
+
+/* FIX PUZZLE IMAGE WHITE BORDERS ON MOBILE */
+#puzzle-grid {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#puzzle-grid canvas {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+@media (max-width: 768px) {
+    #puzzle-container {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    #puzzle-grid {
+        max-width: 100vw !important;
+        width: 95vw !important;
+        border: none !important;
+        outline: none !important;
+    }
+}
+
+
+/* FIX PUZZLE BORDERS - Keep outer frame, remove inner piece borders */
+#puzzle-grid canvas {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    display: block; /* Removes bottom space */
+}
+
+/* Ensure outer grid maintains its frame */
+#puzzle-grid {
+    border: 12px solid #5D4037 !important; /* Force frame back */
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.5) !important;
+    padding: 0 !important;
+    background: #3E2723 !important;
+    gap: 0 !important; /* Ensure seamless */
+}
+
+/* Override previous mobile override that removed the frame */
+@media (max-width: 768px) {
+    #puzzle-grid {
+        border: 12px solid #5D4037 !important;
+        width: 90vw !important; /* Slightly smaller to fit frame */
+    }
+}
+
+
+/* FIX MOBILE BUTTON TEXT TRUNCATION */
+@media (max-width: 768px) {
+    #logout-btn, #lobby-btn-hud {
+        min-width: 70px !important; /* Ensure enough width */
+        white-space: nowrap !important; /* Prevent text wrapping */
+        padding: 8px 16px !important; /* increased side padding */
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #logout-btn, #lobby-btn-hud {
+        min-width: 60px !important;
+        font-size: 12px !important;
+        padding: 6px 12px !important;
+    }
+}
+
