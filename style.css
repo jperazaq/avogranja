@@ -1571,3 +1571,47 @@
     font-size: 18px !important;
 }
 
+
+/* MOBILE BUTTONS FIX - Ensure Salir/Lobby visible on mobile */
+@media (max-width: 768px) {
+    #top-left-controls {
+        position: fixed !important;
+        bottom: 15px !important;
+        left: 15px !important;
+        top: auto !important;
+        z-index: 9999 !important;
+        display: flex !important;
+        gap: 8px !important;
+        flex-direction: row !important;
+    }
+    
+    #logout-btn, #lobby-btn-hud {
+        display: block !important;
+        background: #FF5252 !important;
+        color: white !important;
+        border: 2px solid white !important;
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 3px 0 #D32F2F !important;
+    }
+    
+    #lobby-btn-hud {
+        background: #FFD700 !important;
+        box-shadow: 0 3px 0 #FF8F00 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #top-left-controls {
+        bottom: 10px !important;
+        left: 10px !important;
+        gap: 5px !important;
+    }
+    
+    #logout-btn, #lobby-btn-hud {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+    }
+}
+
