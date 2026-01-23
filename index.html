@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AvoGranja</title>
+    <title>AvoFarm</title>
     <link rel="icon" type="image/png" href="assets/avocado.png">
     <link rel="stylesheet" href="style.css">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2015436833787806"
@@ -15,14 +15,14 @@
     <div id="login-container">
         <div class="login-box">
             <img src="assets/logo_white.png" class="big-logo" alt="Avocash">
-            <h1 id="auth-title">Ingresar</h1>
-            <input type="text" id="nickname-input" placeholder="Apodo (Nickname)" class="hidden">
-            <input type="email" id="email-input" placeholder="Correo electrónico">
-            <input type="password" id="password-input" placeholder="Contraseña">
+            <h1 id="auth-title">Login</h1>
+            <input type="text" id="nickname-input" placeholder="Nickname" class="hidden">
+            <input type="email" id="email-input" placeholder="Email">
+            <input type="password" id="password-input" placeholder="Password">
             <p id="auth-error" class="error-msg"></p>
             <div class="auth-buttons">
-                <button id="auth-action-btn">INGRESAR</button>
-                <button id="toggle-auth-btn">¿No tienes cuenta? Regístrate</button>
+                <button id="auth-action-btn">LOGIN</button>
+                <button id="toggle-auth-btn">No account? Sign up</button>
             </div>
         </div>
     </div>
@@ -30,7 +30,7 @@
     <div id="game-container" class="hidden">
         <canvas id="gameCanvas"></canvas>
         <div id="top-left-controls">
-            <button id="logout-btn" title="Cerrar Sesión">Salir</button>
+            <button id="logout-btn" title="Logout">Logout</button>
             <button id="lobby-btn-hud" class="hidden">🏠 Lobby</button>
         </div>
         <div id="puzzle-container" class="hidden">
@@ -43,8 +43,8 @@
 
             <!-- Reference Image Modal -->
             <div id="reference-modal" class="hidden">
-                <img id="reference-img" src="" alt="Referencia">
-                <button id="close-ref-btn">Cerrar</button>
+                <img id="reference-img" src="" alt="Reference">
+                <button id="close-ref-btn">Close</button>
             </div>
         </div>
         <div id="score-panel">
@@ -65,7 +65,7 @@
             <!-- Puzzle Mode Stats -->
             <div id="puzzle-stats" class="stats-group hidden">
                 <div class="score-container" style="background: #E65100;">
-                    <span style="font-size:16px;">Nivel</span>
+                    <span style="font-size:16px;">Level</span>
                     <span id="hud-puzzle-level">1</span>
                 </div>
                 <div class="score-container" style="background: #0277BD;">
@@ -79,28 +79,28 @@
             </div>
         </div>
         <div id="pause-screen" class="hidden">
-            <h1>PAUSA</h1>
-            <button id="resume-btn">Continuar</button>
-            <button id="pause-lobby-btn" class="secondary-btn" style="margin-top: 15px;">🏠 Volver al Lobby</button>
+            <h1>PAUSED</h1>
+            <button id="resume-btn">Resume</button>
+            <button id="pause-lobby-btn" class="secondary-btn" style="margin-top: 15px;">🏠 Back to Lobby</button>
         </div>
         <div id="game-over-screen" class="hidden">
-            <h1>JUEGO TERMINADO</h1>
-            <p>Puntaje Final: <span id="final-score">0</span></p>
-            <p>🏆 Récord: <span id="high-score">0</span></p>
-            <button id="restart-btn">Jugar de Nuevo</button>
-            <button id="lobby-btn" class="secondary-btn" style="margin-top: 10px;">🏠 Volver al Lobby</button>
-            <button id="gameover-leaderboard-btn" class="secondary-btn" style="margin-top: 10px;">🏆 Ver Tabla de
-                Líderes</button>
+            <h1>GAME OVER</h1>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <p>🏆 Record: <span id="high-score">0</span></p>
+            <button id="restart-btn">Play Again</button>
+            <button id="lobby-btn" class="secondary-btn" style="margin-top: 10px;">🏠 Back to Lobby</button>
+            <button id="gameover-leaderboard-btn" class="secondary-btn" style="margin-top: 10px;">🏆
+                Leaderboard</button>
         </div>
         <div id="start-screen">
             <img src="assets/logo_white.png?v=2" class="big-logo" alt="Avocash">
-            <h1>AvoGranja</h1>
-            <p>¡Atrapa los aguacates y evita que caigan!</p>
-            <button id="start-catch-btn">🥑 Atrapar</button>
-            <button id="start-puzzle-btn">🧩 Rompecabezas</button>
+            <h1>AvoFarm</h1>
+            <p>Catch the avocados and don't let them fall!</p>
+            <button id="start-catch-btn">🥑 Catch Mode</button>
+            <button id="start-puzzle-btn">🧩 Puzzle Mode</button>
             <div class="menu-buttons-row">
-                <button id="leaderboard-btn" class="secondary-btn">🏆 Tabla General</button>
-                <button id="puzzle-leaderboard-btn" class="secondary-btn">🧩 Récords Puzzle</button>
+                <button id="leaderboard-btn" class="secondary-btn">🏆 Leaderboard</button>
+                <button id="puzzle-leaderboard-btn" class="secondary-btn">🧩 Puzzle Records</button>
             </div>
         </div>
     </div>
@@ -118,11 +118,11 @@
                     <img src="assets/avocado.png" class="star-side deco-avo" alt="avo">
                 </div>
                 <div class="ribbon">
-                    <h2>TOP 10 GRANJEROS</h2>
+                    <h2>TOP 10 FARMERS</h2>
                 </div>
             </div>
 
-            <div id="leaderboard-list">Cargando...</div>
+            <div id="leaderboard-list">Loading...</div>
         </div>
     </div>
 

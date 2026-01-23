@@ -112,14 +112,14 @@ let isLoginMode = true;
 // Auth Logic
 function updateAuthUI() {
     if (isLoginMode) {
-        authTitle.innerText = "Ingresar";
-        authActionBtn.innerText = "INGRESAR";
-        toggleAuthBtn.innerText = "¿No tienes cuenta? Regístrate";
+        authTitle.innerText = "Login";
+        authActionBtn.innerText = "LOGIN";
+        toggleAuthBtn.innerText = "No account? Sign up";
         nicknameInput.classList.add('hidden');
     } else {
-        authTitle.innerText = "Registro";
-        authActionBtn.innerText = "CREAR CUENTA";
-        toggleAuthBtn.innerText = "¿Ya tienes cuenta? Ingresa";
+        authTitle.innerText = "Register";
+        authActionBtn.innerText = "CREATE ACCOUNT";
+        toggleAuthBtn.innerText = "Already have an account? Login";
         nicknameInput.classList.remove('hidden');
     }
     authError.innerText = "";
@@ -132,13 +132,13 @@ toggleAuthBtn.addEventListener('click', () => {
 
 authActionBtn.addEventListener('click', async () => {
     try {
-        authError.innerText = "Procesando...";
+        authError.innerText = "Processing...";
         const email = emailInput.value;
         const password = passwordInput.value;
         const nickname = nicknameInput.value;
 
         if (!email || !password) {
-            authError.innerText = "Por favor ingresa correo y contraseña";
+            authError.innerText = "Please enter email and password";
             return;
         }
 
@@ -146,7 +146,7 @@ authActionBtn.addEventListener('click', async () => {
             await loginUser(email, password);
         } else {
             if (!nickname) {
-                authError.innerText = "Por favor ingresa un apodo";
+                authError.innerText = "Please enter a nickname";
                 return;
             }
             await registerUser(email, password, nickname);
@@ -155,11 +155,11 @@ authActionBtn.addEventListener('click', async () => {
         // Error handled in UI
 
         let msg = error.message;
-        if (msg.includes('auth/invalid-email')) msg = "Correo inválido";
-        else if (msg.includes('auth/user-not-found')) msg = "Usuario no encontrado";
-        else if (msg.includes('auth/wrong-password')) msg = "Contraseña incorrecta";
-        else if (msg.includes('auth/email-already-in-use')) msg = "El correo ya está registrado";
-        else if (msg.includes('auth/weak-password')) msg = "Contraseña muy débil (min 6 caracteres)";
+        if (msg.includes('auth/invalid-email')) msg = "Invalid email";
+        else if (msg.includes('auth/user-not-found')) msg = "User not found";
+        else if (msg.includes('auth/wrong-password')) msg = "Incorrect password";
+        else if (msg.includes('auth/email-already-in-use')) msg = "Email already in use";
+        else if (msg.includes('auth/weak-password')) msg = "Weak password (min 6 chars)";
 
         authError.innerText = msg;
     }
@@ -179,22 +179,22 @@ async function loadLeaderboard(type = 'main') {
     if (!leaderboardModal || !leaderboardList) return;
 
     leaderboardModal.classList.remove('hidden');
-    leaderboardList.innerHTML = 'Cargando...';
+    leaderboardList.innerHTML = 'Loading...';
 
     const ribbonTitle = leaderboardModal.querySelector('.ribbon h2');
 
     try {
         let data = [];
         if (type === 'puzzle') {
-            if (ribbonTitle) ribbonTitle.textContent = "MÁSTERS DEL PUZZLE";
+            if (ribbonTitle) ribbonTitle.textContent = "PUZZLE MASTERS";
             data = await getPuzzleLeaderboard();
         } else {
-            if (ribbonTitle) ribbonTitle.textContent = "TOP 10 GRANJEROS";
+            if (ribbonTitle) ribbonTitle.textContent = "TOP 10 FARMERS";
             data = await getLeaderboard();
         }
 
         if (data.length === 0) {
-            leaderboardList.innerHTML = '<p>No hay datos aún.</p>';
+            leaderboardList.innerHTML = '<p>No data yet.</p>';
             return;
         }
 
@@ -218,7 +218,7 @@ async function loadLeaderboard(type = 'main') {
 
                 if (hours > 0) timeStr = `${hours}h ${minutes}m`;
                 else timeStr = `${minutes}m`;
-                scoreText = `Nivel ${entry.level} <small>(${timeStr})</small>`;
+                scoreText = `Level ${entry.level} <small>(${timeStr})</small>`;
             } else {
                 scoreText = `${entry.score} pts`;
             }
@@ -231,7 +231,7 @@ async function loadLeaderboard(type = 'main') {
         });
     } catch (e) {
         console.error("Error loading leaderboard:", e);
-        leaderboardList.innerHTML = '<p style="color:red">Error de conexión.</p>';
+        leaderboardList.innerHTML = '<p style="color:red">Connection error.</p>';
     }
 }
 
@@ -243,9 +243,9 @@ if (leaderboardBtn) {
 
         // Reset Title for Main Game
         const ribbonTitle = leaderboardModal.querySelector('.ribbon h2');
-        if (ribbonTitle) ribbonTitle.textContent = "TOP 10 GRANJEROS";
+        if (ribbonTitle) ribbonTitle.textContent = "TOP 10 FARMERS";
 
-        leaderboardList.innerHTML = 'Cargando...';
+        leaderboardList.innerHTML = 'Loading...';
 
         try {
             // console.log("BOARD: Fetching...");
@@ -253,7 +253,7 @@ if (leaderboardBtn) {
             // console.log("BOARD: Data:", data);
 
             if (data.length === 0) {
-                leaderboardList.innerHTML = '<p>No hay datos aún.</p>';
+                leaderboardList.innerHTML = '<p>No data yet.</p>';
                 return;
             }
 
@@ -277,7 +277,7 @@ if (leaderboardBtn) {
             });
         } catch (e) {
             // console.error("BOARD: Error fetching:", e);
-            leaderboardList.innerHTML = '<p style="color:red">Error de conexión.</p>';
+            leaderboardList.innerHTML = '<p style="color:red">Connection error.</p>';
         }
     });
 }
@@ -313,17 +313,17 @@ if (puzzleLeaderboardBtn) {
     puzzleLeaderboardBtn.addEventListener('click', async () => {
         leaderboardModal.classList.remove('hidden');
         leaderboardModal.classList.remove('sidebar-mode'); // Always full modal for puzzle
-        leaderboardList.innerHTML = 'Cargando Récords...';
+        leaderboardList.innerHTML = 'Loading Records...';
 
         // Update Title
         const ribbonTitle = leaderboardModal.querySelector('.ribbon h2');
-        if (ribbonTitle) ribbonTitle.textContent = "MÁSTERS DEL PUZZLE";
+        if (ribbonTitle) ribbonTitle.textContent = "PUZZLE MASTERS";
 
         try {
             const data = await getPuzzleLeaderboard();
 
             if (data.length === 0) {
-                leaderboardList.innerHTML = '<p>No hay datos aún.</p>';
+                leaderboardList.innerHTML = '<p>No data yet.</p>';
                 return;
             }
 
@@ -348,13 +348,13 @@ if (puzzleLeaderboardBtn) {
 
                 row.innerHTML = `
                     <span>${medal}#${rank} ${entry.nickname}</span>
-                    <span>Nivel ${entry.level} <small>(${timeStr})</small></span>
+                    <span>Level ${entry.level} <small>(${timeStr})</small></span>
                 `;
                 leaderboardList.appendChild(row);
             });
         } catch (e) {
             console.error("Error fetching puzzle leaderboard:", e);
-            leaderboardList.innerHTML = '<p style="color:red">Error de conexión.</p>';
+            leaderboardList.innerHTML = '<p style="color:red">Connection error.</p>';
         }
     });
 

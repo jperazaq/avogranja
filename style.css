@@ -1791,3 +1791,28 @@
     }
 }
 
+
+/* FINAL ATTEMPT MOBILE BUTTON FIX */
+@media (max-width: 768px) {
+    #logout-btn {
+        width: 100px !important;
+        min-width: 100px !important;
+        height: 44px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        
+        font-size: 16px !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        
+        /* Ensure no weird indent */
+        text-indent: 0 !important;
+    }
+}
+

@@ -585,7 +585,7 @@ export class PuzzleGame {
         this.stopTimer();
         this.isPlaying = false;
         if (this.audio) this.audio.stopBackgroundMusic();
-        alert(`¡Nivel ${this.level} Completado!`);
+        alert(`Level ${this.level} Completed!`);
 
         this.level++;
         localStorage.setItem('avocash_puzzle_level', this.level);
@@ -597,7 +597,7 @@ export class PuzzleGame {
     handleGameOver() {
         this.isPlaying = false;
         if (this.audio) this.audio.stopBackgroundMusic();
-        alert("¡Tiempo agotado! Intenta de nuevo.");
+        alert("Time's up! Try again.");
         this.loadLevel(); // Restart same level
     }
 }
